@@ -1,0 +1,147 @@
+[
+    {
+      "id": 1,
+      "name": "Golden Elegance Bracelet",
+      "category": "bracelets",
+      "price": 299,
+      "originalPrice": 399,
+      "image": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop"
+      ],
+      "description": "Exquisite 18k gold-plated bracelet featuring intricate chain links and a secure clasp. Perfect for both casual and formal occasions.",
+      "features": ["18k Gold Plated", "Hypoallergenic", "Adjustable Length", "Gift Box Included"],
+      "inStock": true,
+      "rating": 4.8,
+      "reviews": 124
+    },
+    {
+      "id": 2,
+      "name": "Rose Gold Charm Bracelet",
+      "category": "bracelets",
+      "price": 249,
+      "originalPrice": 329,
+      "image": "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop"
+      ],
+      "description": "Delicate rose gold bracelet adorned with beautiful charms. Each charm tells a story of elegance and sophistication.",
+      "features": ["Rose Gold Plated", "Multiple Charms", "Secure Clasp", "Tarnish Resistant"],
+      "inStock": true,
+      "rating": 4.9,
+      "reviews": 89
+    },
+    {
+      "id": 3,
+      "name": "Diamond Tennis Bracelet",
+      "category": "bracelets",
+      "price": 599,
+      "originalPrice": 799,
+      "image": "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop"
+      ],
+      "description": "Stunning tennis bracelet featuring brilliant-cut cubic zirconia stones in a classic setting. A timeless piece for special occasions.",
+      "features": ["Cubic Zirconia Stones", "Sterling Silver", "Professional Setting", "Lifetime Warranty"],
+      "inStock": true,
+      "rating": 5.0,
+      "reviews": 67
+    },
+    {
+      "id": 4,
+      "name": "Vintage Pearl Bracelet",
+      "category": "bracelets",
+      "price": 189,
+      "originalPrice": 249,
+      "image": "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop"
+      ],
+      "description": "Classic pearl bracelet with lustrous freshwater pearls. A vintage-inspired design that adds elegance to any outfit.",
+      "features": ["Freshwater Pearls", "Gold Clasp", "Vintage Design", "Hand Selected Pearls"],
+      "inStock": true,
+      "rating": 4.7,
+      "reviews": 156
+    },
+  
+    {
+      "id": 5,
+      "name": "Solitaire Diamond Ring",
+      "category": "rings",
+      "price": 899,
+      "originalPrice": 1199,
+      "image": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop"
+      ],
+      "description": "Breathtaking solitaire ring featuring a brilliant-cut center stone in a classic six-prong setting. Perfect for engagements or special occasions.",
+      "features": ["1 Carat Center Stone", "14k White Gold", "Six-Prong Setting", "Certificate Included"],
+      "inStock": true,
+      "rating": 4.9,
+      "reviews": 203
+    },
+    {
+      "id": 6,
+      "name": "Vintage Rose Gold Ring",
+      "category": "rings",
+      "price": 449,
+      "originalPrice": 599,
+      "image": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop"
+      ],
+      "description": "Elegant vintage-inspired ring in rose gold with intricate detailing. Features a beautiful center stone surrounded by smaller accent stones.",
+      "features": ["Rose Gold Band", "Vintage Design", "Multiple Stones", "Antique Finish"],
+      "inStock": true,
+      "rating": 4.8,
+      "reviews": 145
+    },
+    {
+      "id": 7,
+      "name": "Emerald Cut Engagement Ring",
+      "category": "rings",
+      "price": 1299,
+      "originalPrice": 1699,
+      "image": "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop"
+      ],
+      "description": "Sophisticated emerald cut ring with exceptional clarity and brilliance. Set in platinum for maximum durability and shine.",
+      "features": ["Emerald Cut Stone", "Platinum Setting", "VS1 Clarity", "Lifetime Warranty"],
+      "inStock": true,
+      "rating": 5.0,
+      "reviews": 78
+    },
+    {
+      "id": 8,
+      "name": "Stackable Gold Rings Set",
+      "category": "rings",
+      "price": 329,
+      "originalPrice": 429,
+      "image": "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=500&h=500&fit=crop",
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500&h=500&fit=crop"
+      ],
+      "description": "Set of three stackable rings in different gold tones. Mix and match to create your perfect combination.",
+      "features": ["Set of 3 Rings", "Mixed Gold Tones", "Stackable Design", "Various Textures"],
+      "inStock": true,
+      "rating": 4.6,
+      "reviews": 234
+    }
+  ]
