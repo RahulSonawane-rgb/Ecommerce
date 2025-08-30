@@ -19,11 +19,11 @@ export const AdminProvider = ({ children }) => {
     heroDescription: "Discover our exquisite collection of handcrafted bracelets and rings. Each piece tells a story of elegance, craftsmanship, and timeless beauty.",
     companyDescription: "Crafting exquisite jewelry pieces that celebrate life's precious moments. Each piece is designed with love and attention to detail.",
     shippingRates: {
-      standard: 5.99,
+      standard: 50,
       express: 15.99,
       overnight: 29.99
     },
-    taxRate: 0.08,
+    taxRate: 0.00,
     footerText: '© 2024 HIDAYA Jewelry. All rights reserved.'
   });
   const [loading, setLoading] = useState(false);
@@ -34,10 +34,18 @@ export const AdminProvider = ({ children }) => {
     async function load() {
       try {
         setLoading(true);
-        // Load products from local JSON, orders from Odoo
-        const o = await OdooOrders.list({ limit: 100 });
+        // Load products from backend API, orders from Odoo
+        const [o, productsRes] = await Promise.all([
+          OdooOrders.list({ limit: 100 }),
+          fetch('/api/products')
+        ]);
         if (!mounted) return;
-        setProducts(productsData);
+        if (productsRes.ok) {
+          const p = await productsRes.json();
+          setProducts(Array.isArray(p) ? p : productsData);
+        } else {
+          setProducts(productsData);
+        }
         setOrders(o);
       } catch (e) {
         toast({ title: 'Error', description: 'Failed to load orders from Odoo', variant: 'destructive' });
@@ -51,24 +59,24 @@ export const AdminProvider = ({ children }) => {
     return () => { mounted = false; };
   }, []);
 
-  // Product Management (Local JSON)
+  // Product Management (Persist to backend products.json)
   const addProduct = useCallback(async (productData) => {
     try {
       setLoading(true);
-      // Add to local state only (no Odoo integration for products)
-      const newProduct = {
-        id: Date.now(),
-        ...productData,
-        inStock: true,
-        rating: 0,
-        reviews: 0,
-        images: [productData.image || ''],
-        features: productData.features || []
-      };
-      setProducts(prev => [...prev, newProduct]);
-      toast({ title: 'Product Added', description: `${productData.name} has been added locally.` });
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || 'Failed to add product');
+      }
+      const created = await res.json();
+      setProducts(prev => [...prev, created]);
+      toast({ title: 'Product Added', description: `${created.name} has been saved.` });
     } catch (e) {
-      toast({ title: 'Error', description: 'Failed to add product', variant: 'destructive' });
+      toast({ title: 'Error', description: e.message || 'Failed to add product', variant: 'destructive' });
       throw e;
     } finally { setLoading(false); }
   }, []);
@@ -76,15 +84,20 @@ export const AdminProvider = ({ children }) => {
   const updateProduct = useCallback(async (id, updates) => {
     try {
       setLoading(true);
-      // Update local state only
-      setProducts(prev => prev.map(product => 
-        product.id === id 
-          ? { ...product, ...updates }
-          : product
-      ));
-      toast({ title: 'Product Updated', description: 'Product updated locally.' });
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || 'Failed to update product');
+      }
+      const saved = await res.json();
+      setProducts(prev => prev.map(product => product.id === id ? saved : product));
+      toast({ title: 'Product Updated', description: 'Product saved.' });
     } catch (e) {
-      toast({ title: 'Error', description: 'Failed to update product', variant: 'destructive' });
+      toast({ title: 'Error', description: e.message || 'Failed to update product', variant: 'destructive' });
       throw e;
     } finally { setLoading(false); }
   }, []);
@@ -92,11 +105,15 @@ export const AdminProvider = ({ children }) => {
   const deleteProduct = useCallback(async (id) => {
     try {
       setLoading(true);
-      // Remove from local state only
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || 'Failed to delete product');
+      }
       setProducts(prev => prev.filter(p => p.id !== id));
-      toast({ title: 'Product Deleted', description: 'Product removed locally.' });
+      toast({ title: 'Product Deleted', description: 'Product removed.' });
     } catch (e) {
-      toast({ title: 'Error', description: 'Failed to delete product', variant: 'destructive' });
+      toast({ title: 'Error', description: e.message || 'Failed to delete product', variant: 'destructive' });
       throw e;
     } finally { setLoading(false); }
   }, []);

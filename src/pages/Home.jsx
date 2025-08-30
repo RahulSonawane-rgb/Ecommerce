@@ -21,8 +21,8 @@ const Home = () => {
   const features = [
     {
       icon: Shield,
-      title: "Lifetime Warranty",
-      description: "All our jewelry comes with a comprehensive lifetime warranty"
+      title: "Quality Assurance",
+      description: "All products are 100% genuine and come with a certificate of authenticity"
     },
     {
       icon: Truck,
@@ -31,13 +31,13 @@ const Home = () => {
     },
     {
       icon: HeartHandshake,
-      title: "Handcrafted Quality",
-      description: "Each piece is carefully crafted by skilled artisans"
+      title: "Carefully Handled",
+      description: "Each piece is Handaled with love and attention to detail"
     },
     {
       icon: Star,
-      title: "Premium Materials",
-      description: "Only the finest gold, silver, and gemstones"
+      title: "Feel Special",
+      description: "Unique designs that make you feel special every day"
     }
   ];
 

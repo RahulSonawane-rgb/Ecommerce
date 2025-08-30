@@ -11,8 +11,10 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
     name: '',
     description: '',
     price: '',
+    originalPrice: '',
     category: '',
     image: '',
+    images: [''],
     stock: '',
     rating: '',
     featured: false
@@ -27,8 +29,10 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
         name: product.name || '',
         description: product.description || '',
         price: product.price || '',
+        originalPrice: product.originalPrice || '',
         category: product.category || '',
         image: product.image || '',
+        images: (product.images && product.images.length ? product.images : [product.image || '']) || [''],
         stock: product.stock || '',
         rating: product.rating || '',
         featured: product.featured || false
@@ -48,6 +52,10 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
     }
 
     if (!formData.price || isNaN(formData.price) || parseFloat(formData.price) <= 0) {
+      newErrors.price = 'Valid price is required';
+    }
+
+    if (!formData.originalPrice || isNaN(formData.originalPrice) || parseFloat(formData.originalPrice) <= 0) {
       newErrors.price = 'Valid price is required';
     }
 
@@ -76,6 +84,7 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
 
     const productData = {
       ...formData,
+      image: formData.images && formData.images.length ? formData.images[0] : formData.image,
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),
       rating: formData.rating ? parseFloat(formData.rating) : null
@@ -104,6 +113,26 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
         [name]: ''
       }));
     }
+  };
+
+  const handleImageChange = (index, value) => {
+    setFormData(prev => {
+      const next = [...(prev.images || [])];
+      next[index] = value;
+      return { ...prev, images: next };
+    });
+  };
+
+  const addImageField = () => {
+    setFormData(prev => ({ ...prev, images: [...(prev.images || []), ''] }));
+  };
+
+  const removeImageField = (index) => {
+    setFormData(prev => {
+      const next = [...(prev.images || [])];
+      next.splice(index, 1);
+      return { ...prev, images: next.length ? next : [''] };
+    });
   };
 
   return (
@@ -225,6 +254,28 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Original Price
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                  <Input
+                    type="number"
+                    name="originalPrice"
+                    value={formData.originalPrice}
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0"
+                    className={`pl-8 ${errors.originalPrice ? 'border-red-500' : ''}`}
+                  />
+                </div>
+                {errors.originalPrice && (
+                  <p className="text-red-500 text-sm mt-1">{errors.originalPrice}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Stock Quantity *
                 </label>
                 <Input
@@ -262,24 +313,58 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
               </div>
             </div>
 
-            {/* Image URL */}
+            {/* Images */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image URL
+                Images (first one will be the main image)
               </label>
-              <div className="relative">
-                <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="pl-10"
-                />
+              <div className="space-y-3">
+                {(formData.images || ['']).map((img, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+                    <div className="md:col-span-9 relative">
+                      <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        type="url"
+                        value={img}
+                        onChange={(e) => handleImageChange(idx, e.target.value)}
+                        placeholder={`https://example.com/image-${idx + 1}.jpg`}
+                        className="pl-10"
+                      />
+                    </div>
+                    <div className="md:col-span-3 flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => removeImageField(idx)} className="flex-1">
+                        Remove
+                      </Button>
+                      {idx === (formData.images?.length || 1) - 1 && (
+                        <Button type="button" onClick={addImageField} className="flex-1 bg-rose-500 hover:bg-rose-600">
+                          Add
+                        </Button>
+                      )}
+                    </div>
+                    {/* Preview */}
+                    {img && (
+                      <div className="md:col-span-12">
+                        <div className="w-32 h-32 border border-gray-300 rounded-lg overflow-hidden">
+                          <img
+                            src={img}
+                            alt={`Preview ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500 text-sm" style={{ display: 'none' }}>
+                            Invalid Image
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Enter a direct link to the product image
+                You can add multiple image URLs. The first image is used as the cover.
               </p>
             </div>
 
@@ -298,28 +383,7 @@ const ProductForm = ({ product, onSubmit, onClose }) => {
               </label>
             </div>
 
-            {/* Preview */}
-            {formData.image && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image Preview
-                </label>
-                <div className="w-32 h-32 border border-gray-300 rounded-lg overflow-hidden">
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500 text-sm" style={{ display: 'none' }}>
-                    Invalid Image
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Preview removed in favor of per-image previews above */}
 
             {/* Actions */}
             <div className="flex gap-4 pt-6 border-t border-gray-200">

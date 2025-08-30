@@ -4,10 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
+import { useAdmin } from '@/context/AdminContext';
 import { toast } from '@/components/ui/use-toast';
 
 const Cart = () => {
+  const { siteSettings, addOrder } = useAdmin();
   const { items, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+  const taxRate = siteSettings?.taxRate || 0;
+  const shippingRates = siteSettings?.shippingRates || { standard: 5.99, express: 15.99, overnight: 29.99 };
+  const freeShippingThreshold = siteSettings?.shippingRates?.freeShippingThreshold || 200;
 
   const handleQuantityChange = (productId, newQuantity) => {
     updateQuantity(productId, newQuantity);
@@ -27,6 +32,15 @@ const Cart = () => {
       title: "Cart Cleared",
       description: "All items have been removed from your cart."
     });
+  };
+
+  // Calculate shipping cost
+  const getShippingCost = () => {
+    const subtotal = getCartTotal();
+    if (freeShippingThreshold && subtotal >= freeShippingThreshold) {
+      return 0; // Free shipping
+    }
+    return shippingRates.standard; // Default to standard shipping
   };
 
   if (items.length === 0) {
@@ -184,18 +198,23 @@ const Cart = () => {
                 
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
-                  <span className="text-green-600">Free</span>
+                  <span>{getShippingCost() === 0 ? "Free" : `₹${getShippingCost().toFixed(2)}`}</span>
                 </div>
                 
                 <div className="flex justify-between text-gray-600">
                   <span>Tax</span>
-                  <span>₹{(getCartTotal() * 0.08).toFixed(2)}</span>
+                  <span>₹{(getCartTotal() * taxRate).toFixed(2)}</span>
                 </div>
+                {freeShippingThreshold && getCartTotal() < freeShippingThreshold && (
+                    <div className="text-sm text-green-600 bg-green-50 p-2 rounded">
+                      Add ₹{(freeShippingThreshold - getCartTotal()).toFixed(2)} more for free shipping!
+                    </div>
+                  )}
                 
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total</span>
-                    <span>₹{(getCartTotal() * 1.08).toFixed(2)}</span>
+                    <span>₹{(getCartTotal() + getShippingCost()).toFixed(2)}</span>
                   </div>
                 </div>
               </div>

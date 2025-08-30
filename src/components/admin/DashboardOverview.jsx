@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -12,14 +12,28 @@ import {
   Settings
 } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
+import { toast } from '@/components/ui/use-toast';
+import ProductForm from './ProductForm';
+import NotificationCenter from './NotificationCenter';
+import SiteSettings from './SiteSettings';
+import OrderManagement from './OrderManagement';
 
 const DashboardOverview = () => {
   const { products, orders, notifications } = useAdmin();
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showOrderManagement, setShowOrderManagement] = useState(false);
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+  const [showSiteSettings, setShowSiteSettings] = useState(false);
 
   // Calculate metrics
   const totalProducts = products.length;
   const totalOrders = orders.length;
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  let totalPayments = orders.reduce((sum, order) => sum + order.total, 0);
+  let cancelledOrdersPayments = orders
+    .filter(order => order.status === 'cancelled')
+    .reduce((sum, order) => sum + order.total, 0);
+  totalPayments -= cancelledOrdersPayments;
+  const totalRevenue = totalPayments;
   const pendingOrders = orders.filter(order => order.status === 'pending').length;
   const unreadNotifications = notifications.filter(n => !n.read).length;
   const recentOrders = orders.slice(0, 5);
@@ -61,6 +75,30 @@ const DashboardOverview = () => {
       changeType: pendingOrders > 0 ? 'warning' : 'positive'
     }
   ];
+
+  const handleFormClose = () => {
+    setShowAddForm(false);
+  };
+
+  const handleFormSubmit = () => {
+    setShowAddForm(false);
+    toast({
+      title: "Product Added",
+      description: "Product has been added successfully."
+    });
+  };
+
+  const handleOrderManagementClose = () => {
+    setShowOrderManagement(false);
+  };
+
+  const handleNotificationCenterClose = () => {
+    setShowNotificationCenter(false);
+  };
+
+  const handleSiteSettingsClose = () => {
+    setShowSiteSettings(false);
+  };
 
   return (
     <div className="p-8">
@@ -114,7 +152,10 @@ const DashboardOverview = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
-            <button className="text-sm text-rose-600 hover:text-rose-700 font-medium">
+            <button 
+              className="text-sm text-rose-600 hover:text-rose-700 font-medium"
+              onClick={() => setShowOrderManagement(true)}
+            >
               View All
             </button>
           </div>
@@ -164,7 +205,10 @@ const DashboardOverview = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Top Products</h3>
-            <button className="text-sm text-rose-600 hover:text-rose-700 font-medium">
+            <button 
+              className="text-sm text-rose-600 hover:text-rose-700 font-medium"
+              onClick={() => setShowAddForm(true)}
+            >
               View All
             </button>
           </div>
@@ -212,24 +256,83 @@ const DashboardOverview = () => {
       >
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all">
+          <button 
+            className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all"
+            onClick={() => setShowAddForm(true)}
+          >
             <Plus className="h-5 w-5 text-rose-600 mr-2" />
             <span className="font-medium text-gray-700">Add Product</span>
           </button>
-          <button className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all">
+          <button 
+            className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all"
+            onClick={() => setShowOrderManagement(true)}
+          >
             <ShoppingCart className="h-5 w-5 text-rose-600 mr-2" />
             <span className="font-medium text-gray-700">Process Orders</span>
           </button>
-          <button className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all">
+          <button 
+            className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all"
+            onClick={() => setShowNotificationCenter(true)}
+          >
             <Eye className="h-5 w-5 text-rose-600 mr-2" />
             <span className="font-medium text-gray-700">View Analytics</span>
           </button>
-          <button className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all">
+          <button 
+            className="flex items-center justify-center p-4 bg-white rounded-lg border border-rose-200 hover:border-rose-300 hover:shadow-md transition-all"
+            onClick={() => setShowSiteSettings(true)}
+          >
             <Settings className="h-5 w-5 text-rose-600 mr-2" />
             <span className="font-medium text-gray-700">Site Settings</span>
           </button>
         </div>
       </motion.div>
+
+      {/* Modals */}
+      {showAddForm && (
+        <ProductForm
+          onSubmit={handleFormSubmit}
+          onClose={handleFormClose}
+        />
+      )}
+      {showOrderManagement && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleOrderManagementClose}>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <OrderManagement onClose={handleOrderManagementClose} />
+          </motion.div>
+        </div>
+      )}
+      {showNotificationCenter && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleNotificationCenterClose}>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <NotificationCenter onClose={handleNotificationCenterClose} />
+          </motion.div>
+        </div>
+      )}
+      {showSiteSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleSiteSettingsClose}>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <SiteSettings onClose={handleSiteSettingsClose} />
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -235,8 +235,8 @@ const ProductDetail = () => {
                   <Shield className="h-5 w-5 text-rose-600" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Lifetime Warranty</h4>
-                  <p className="text-sm text-gray-600">Quality guaranteed</p>
+                  <h4 className="font-medium text-gray-900">Quality Assurance</h4>
+                  <p className="text-sm text-gray-600">100% genuine products</p>
                 </div>
               </div>
 

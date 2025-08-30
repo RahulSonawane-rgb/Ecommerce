@@ -90,12 +90,6 @@ const Admin = () => {
               <Filter className="h-4 w-4" />
               Filters
             </Button>
-            {activeTab === 'products' && (
-              <Button className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Product
-              </Button>
-            )}
           </div>
         </div>
 

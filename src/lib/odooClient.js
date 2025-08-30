@@ -1,13 +1,9 @@
 // Lightweight Odoo JSON-RPC client for browser usage.
 // For production, proxy these calls through a secure Node server to protect credentials.
 
-// Use Vite proxy in dev to avoid CORS: requests go to /odoo/jsonrpc → proxied to Odoo
-const ODOO_URL = import.meta.env.VITE_ODOO_URL || '';
-const ODOO_DB = import.meta.env.VITE_ODOO_DB;
-const ODOO_LOGIN = import.meta.env.VITE_ODOO_LOGIN;
-const ODOO_API_KEY = import.meta.env.VITE_ODOO_API_KEY;
-
-const JSON_RPC_PATH = '/jsonrpc';
+// Use secure Node backend proxy at /api
+const JSON_RPC_PROXY = '/api/odoo/execute_kw';
+const AUTH_PROXY = '/api/odoo/authenticate';
 
 function joinUrl(base, path) {
   if (!base) return `/odoo${path}`; // dev proxy
@@ -22,49 +18,34 @@ let cachedSession = {
 };
 
 async function jsonRpc(endpoint, body, options = {}) {
-  const url = joinUrl(ODOO_URL, endpoint);
-  const response = await fetch(url, {
+  const response = await fetch(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(cachedSession.csrfToken ? { 'X-CSRFToken': cachedSession.csrfToken } : {}),
-    },
-    body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), ...body }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
     ...options,
   });
   const json = await response.json();
-  if (json.error) {
-    const message = json.error.data?.message || json.error.message || 'Odoo JSON-RPC error';
-    throw new Error(message);
+  if (!response.ok) {
+    throw new Error(json.error || 'Odoo proxy error');
   }
-  return json.result;
+  return json;
 }
 
 export async function authenticate() {
   if (cachedSession.uid) return cachedSession;
-  // Prefer API key through /web/session/authenticate where supported (Odoo 15+)
-  const params = {
-    service: 'common',
-    method: 'authenticate',
-    args: [ODOO_DB, ODOO_LOGIN, ODOO_API_KEY, {}],
-  };
-  const result = await jsonRpc(JSON_RPC_PATH, { method: 'call', params });
+  const result = await jsonRpc(AUTH_PROXY, {});
   if (!result || !result.uid) {
     throw new Error('Failed to authenticate with Odoo');
   }
   cachedSession.uid = result.uid;
-  cachedSession.context = result.user_context || {};
+  cachedSession.context = result.context || {};
   return cachedSession;
 }
 
 export async function callKw(model, method, args = [], kwargs = {}) {
   await authenticate();
-  const params = {
-    service: 'object',
-    method: 'execute_kw',
-    args: [ODOO_DB, cachedSession.uid, ODOO_API_KEY, model, method, args, kwargs],
-  };
-  return jsonRpc(JSON_RPC_PATH, { method: 'call', params });
+  const { result } = await jsonRpc(JSON_RPC_PROXY, { model, method, args, kwargs });
+  return result;
 }
 
 export const OdooClient = {
