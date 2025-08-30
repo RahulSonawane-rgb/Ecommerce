@@ -9,7 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Account = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [orders, setOrders] = useState([]);
@@ -95,10 +95,15 @@ const Account = () => {
   const handleProfileUpdate = async () => {
     setLoading(true);
     try {
-      // This would be implemented in AuthContext
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully."
+      const updated = await updateProfile({
+        name: profileData.name,
+        email: profileData.email,
+        mobile: profileData.mobile,
+      });
+      setProfileData({
+        name: updated?.name || profileData.name,
+        email: updated?.email || profileData.email,
+        mobile: updated?.mobile || profileData.mobile,
       });
       setEditingProfile(false);
     } catch (error) {
@@ -111,6 +116,21 @@ const Account = () => {
       setLoading(false);
     }
   };
+
+  // Poll orders periodically when Orders tab is active
+  useEffect(() => {
+    if (activeTab !== 'orders' || !user || user.isAdmin) return;
+    let mounted = true;
+    // Initial load to ensure fresh data
+    loadOrders();
+    const intervalId = setInterval(() => {
+      if (mounted) loadOrders();
+    }, 15000);
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
+  }, [activeTab, user]);
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
